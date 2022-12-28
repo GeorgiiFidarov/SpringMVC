@@ -22,15 +22,20 @@ public class PeopleController {
         this.personDao = personDao;
     }
 
+    //выводит список всех людей на скрин /people
+    //c /people отправляет на view /people/index.html
     @GetMapping
     public String index(Model model){
         model.addAttribute("people",personDao.index());
         return "/people/index";
     }
+    //показывает по id страницу каждого человека
+    //страницу по человеку делает /people/show.html
+    //@PathVariable->читает с html переменную и пишет ее в java код
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model){
         //достаёт 1 человека по его Id
-        model.addAttribute("person",personDao.show(id));
+        model.addAttribute("person",personDao.show(id));//достали человека записали в модель
         return "people/show";
 
     }
