@@ -21,7 +21,6 @@ public class PeopleController {
     public PeopleController(PersonDao personDao) {
         this.personDao = personDao;
     }
-
     //выводит список всех людей на скрин /people
     //c /people отправляет на view /people/index.html
     @GetMapping
@@ -37,7 +36,6 @@ public class PeopleController {
         //достаёт 1 человека по его Id
         model.addAttribute("person",personDao.show(id));//достали человека записали в модель
         return "people/show";
-
     }
     @GetMapping("/new")
     public String newPerson(@ModelAttribute("person") Person person){
