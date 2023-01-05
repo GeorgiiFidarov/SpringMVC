@@ -7,18 +7,20 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.fidarov.SpringMVC.dao.PersonDao;
 import ru.fidarov.SpringMVC.models.Person;
+import ru.fidarov.SpringMVC.util.PersonValidator;
 
-import javax.naming.Binding;
 import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/people")
 public class PeopleController {
+    private final PersonValidator personValidator;
 
     private final PersonDao personDao;
 
     @Autowired
-    public PeopleController(PersonDao personDao) {
+    public PeopleController(PersonValidator personValidator, PersonDao personDao) {
+        this.personValidator = personValidator;
         this.personDao = personDao;
     }
     //выводит список всех людей на скрин /people
@@ -44,6 +46,7 @@ public class PeopleController {
     @PostMapping()
     public String create(@ModelAttribute("person") @Valid Person person,
                          BindingResult bindingResult){
+        personValidator.validate(person,bindingResult);
         if (bindingResult.hasErrors())
             return "people/new";
 
@@ -56,8 +59,10 @@ public class PeopleController {
         return "people/edit";
     }
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("person")@Valid Person person,BindingResult bindingResult,
+    public String update(@ModelAttribute("person")@Valid Person person
+            ,BindingResult bindingResult,
                          @PathVariable("id") int id){
+        personValidator.validate(person,bindingResult);
         if (bindingResult.hasErrors()){
             return "people/edit";
         }
