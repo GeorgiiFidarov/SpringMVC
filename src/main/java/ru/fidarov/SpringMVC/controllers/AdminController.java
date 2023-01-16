@@ -21,12 +21,10 @@ public class AdminController {
     @GetMapping()
     public String getAdminPage(Model model, @ModelAttribute("person")Person person){
         model.addAttribute("people",personDao.index());
-
         return "adminPage";
     }
     @PatchMapping("/add")
     public String makeAdmin(@ModelAttribute("person") Person person) {
-        System.out.println("Your favourite PornStar is: " + person.getName());
         return "redirect:/people";
     }
 }
