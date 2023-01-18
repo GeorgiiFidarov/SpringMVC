@@ -14,6 +14,7 @@ import ru.fidarov.SpringMVC.models.Person;
 @RequestMapping("/admin")
 public class AdminController {
     private final PersonDao personDao;
+
     @Autowired
     public AdminController(PersonDao personDao) {
         this.personDao = personDao;
@@ -25,6 +26,8 @@ public class AdminController {
     }
     @PatchMapping("/add")
     public String makeAdmin(@ModelAttribute("person") Person person) {
+        personDao.setFavourite(person.getId());
+        System.out.println(person.getId());
         return "redirect:/people";
     }
 }

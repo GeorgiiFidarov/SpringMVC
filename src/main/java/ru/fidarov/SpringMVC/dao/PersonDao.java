@@ -1,92 +1,73 @@
 package ru.fidarov.SpringMVC.dao;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.fidarov.SpringMVC.models.Person;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class PersonDao {
-    private final JdbcTemplate jdbcTemplate;
+
+    private final SessionFactory sessionFactory;
+    private List<Person> tempData;
+    {
+        tempData = new ArrayList<>();
+        tempData.add(new Person("Default",1));
+    }
     @Autowired
-    public PersonDao(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    public PersonDao(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
-    public Optional<Person> show(String email){
-        return jdbcTemplate.query("SELECT * FROM Person WHERE email=?",new Object[]{email},
-                new BeanPropertyRowMapper<>(Person.class)).stream().findAny();
-    }
+    @Transactional
     public Person show(int id){
-        return jdbcTemplate.query("SELECT * FROM Person WHERE id=?",new Object[]{id},
-                        new BeanPropertyRowMapper<>(Person.class))
-                .stream().findAny().orElse(null);
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Person.class,id);
     }
+
+    //создаёт транзакцию внутри него будет открыта транзакция
+    @Transactional(readOnly = true)//указываем на то что только изменяем
     public List<Person> index() {
-        return jdbcTemplate.query("SELECT * FROM Person",
-                new BeanPropertyRowMapper<>(Person.class));
+        Session session = sessionFactory.getCurrentSession();
+        return session.createQuery("SELECT p FROM Person p ", Person.class)
+                .getResultList();
     }
+    @Transactional
     public void save(Person person){
-        jdbcTemplate.update("INSERT INTO Person(name,age,email,address) VALUES(?, ?, ?, ?)"
-                ,person.getName(),person.getAge(),person.getEmail(),person.getAddress());
+        Session session = sessionFactory.getCurrentSession();
+        session.save(person);
     }
+    @Transactional
     public void update(int id,Person updatedPerson){
-        jdbcTemplate.update("UPDATE Person SET name=?, age=?, email=?, address=? WHERE id=?",
-                updatedPerson.getName(),updatedPerson.getAge(),updatedPerson.getEmail(),updatedPerson.getAddress(), id);
+        Session session = sessionFactory.getCurrentSession();
+        Person person = session.get(Person.class,id);
+        person.setName(updatedPerson.getName());
+        person.setAge(updatedPerson.getAge());
+        session.update(person);
     }
+    @Transactional
     public void delete(int id){
-        jdbcTemplate.update("DELETE FROM Person WHERE id=?",id);
+        Session session = sessionFactory.getCurrentSession();
+        Person person = session.get(Person.class,id);
+        session.delete(person);
+
     }
-
-    //////////////////////////////////
-    ////////тест вставки//////////////
-    /////////////////////////////////
-
-    public void testMultipleUpdate(){
-        List<Person> people = create1000people();
-
-        long before = System.currentTimeMillis();
-        for (Person person:people){
-            jdbcTemplate.update("INSERT INTO Person VALUES(?, ?, ?, ?)"
-                    ,person.getName(),person.getAge(),person.getEmail(),person.getId());
+    @Transactional
+    public void setFavourite(int id){
+        Session session = sessionFactory.getCurrentSession();
+        Person favourite = session.get(Person.class,id);
+        tempData.add(favourite);
+        if (tempData.size()>5){
+            tempData.clear();
         }
-        long after = System.currentTimeMillis();
-        System.out.println("Time "+(after-before));
+        System.out.println(tempData.get(tempData.size()-1).getName());
     }
-    public void testBatchUpdate(){
-        List<Person> people = create1000people();
-
-        long before = System.currentTimeMillis();
-        jdbcTemplate.batchUpdate("INSERT INTO Person VALUES(?,?,?,?)",
-                new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
-                        preparedStatement.setInt(1,people.get(i).getId());
-                        preparedStatement.setString(2,people.get(i).getName());
-                        preparedStatement.setInt(3,people.get(i).getAge());
-                        preparedStatement.setString(4,people.get(i).getEmail());
-
-                    }
-                    @Override
-                    public int getBatchSize() {
-                        return people.size();
-                    }
-                });
-        long after = System.currentTimeMillis();
-        System.out.println("Time " +(after-before));
-    }
-    private List<Person> create1000people(){
-        List<Person> people = new ArrayList<>();
-        for (int i = 0; i < 1000; i++) {
-            people.add(new Person(i,"Name"+i,"test"+i+"@mail.ru",30,"address"));
-        }
-        return people;
+    @Transactional
+    public String getFavourite(){
+        System.out.println(tempData.get(tempData.size()-1).getName());
+        return tempData.get(tempData.size()-1).getName();
     }
 }

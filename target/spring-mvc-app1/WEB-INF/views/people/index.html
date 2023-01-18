@@ -5,18 +5,30 @@
     <title>Index</title>
 </head>
 <body>
+<div style="display: flex">
+    <div>
+        <div th:each="person : ${people}">
+            <a th:href="@{/people/{id}(id=${person.getId()})}"
+               th:text="${person.getName() + ', ' + person.getAge()}">user</a>
+        </div>
+    </div>
+    <div th:switch="${fav}">
+        <div th:case="${'Default'}">
+            <a href="http://localhost:8080/admin">Choose you model</a>
+        </div>
+        <div th:case="*">
+            <a th:text="'Favourite PornStar: '+${fav}">user</a>
+        </div>
+    </div>
 
-<div th:each="person : ${people}">
-    <a th:href="@{/people/{id}(id=${person.getId()})}"
-       th:text="${person.getName() + ', ' + person.getAge()}">user</a>
 </div>
+
+
 
 <br/>
 <hr/>
 
 <a href="/people/new">Create new person</a>
-
-<p th:text="${person.getAddress()}">VALUE</p>
 
 </body>
 </html>
