@@ -6,7 +6,7 @@
 </head>
 <body>
 <form th:method="PATCH" th:action="@{/admin/add}">
-  <label for="person">Select PornStar</label>
+  <label for="person">Select actress/actor</label>
   <select th:object="${person}" th:field="*{id}" id="person">
     <option th:each="person : ${people}" th:value="${person.getId()}"
             th:text="${person.getName()}"></option>

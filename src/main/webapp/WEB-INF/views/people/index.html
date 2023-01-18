@@ -14,10 +14,10 @@
     </div>
     <div th:switch="${fav}">
         <div th:case="${'Default'}">
-            <a href="http://localhost:8080/admin">Choose you model</a>
+            <a href="http://localhost:8080/admin">Favourite actress/actor</a>
         </div>
         <div th:case="*">
-            <a th:text="'Favourite PornStar: '+${fav}">user</a>
+            <a th:text="'Favourite actress/actor: '+${fav}">user</a>
         </div>
     </div>
 
