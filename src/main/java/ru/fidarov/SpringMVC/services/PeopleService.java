@@ -8,6 +8,7 @@ import ru.fidarov.SpringMVC.models.Person;
 import ru.fidarov.SpringMVC.repositories.PeopleRepository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class PeopleService {
     private List<Person> listData;
     {
         listData = new ArrayList<>();
-        listData.add(new Person("Def",1));
+        listData.add(new Person("Def",1,"email@gmail.com"));
     }
 
     @Autowired
@@ -31,6 +32,8 @@ public class PeopleService {
         return peopleRepository.findAll();
     }
 
+
+
     public Person findOne(int id){
         Optional<Person> foundPerson = peopleRepository.findById(id);
         return foundPerson.orElse(null);
@@ -38,17 +41,21 @@ public class PeopleService {
 
     @Transactional
     public void save(Person person){
+        person.setCreatedAt(new Date());
         peopleRepository.save(person);
     }
+
     @Transactional
     public void update(int id, Person updatedPerson){
         updatedPerson.setId(id);
         peopleRepository.save(updatedPerson);
     }
+
     @Transactional
     public void delete(int id){
         peopleRepository.deleteById(id);
     }
+
     @Transactional
     public void setFavourite(int id){
         Optional<Person> favourite = peopleRepository.findById(id);
@@ -57,10 +64,14 @@ public class PeopleService {
 
         System.out.println(listData.size());
     }
+
     public String getFavourite(){
         return listData.get(listData.size()-1).getName();
     }
 
+    public void test(){
+        System.out.println("Testing here with debug. Inside Hibernate Transaction");
+    }
 
 }
 

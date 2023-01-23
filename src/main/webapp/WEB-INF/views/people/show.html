@@ -5,10 +5,27 @@
     <title>Show</title>
 </head>
 <body>
-<p th:text="${person.getName() + ', ' + person.getAge()}">VALUE</p>
-<p th:text="'Id человека: '+${person.getId()}">VALUE</p>
+<hr style="
+    color: black;
+    background-color: orange;
+    height: 2px;">
 
-<a th:href="@{/people/{id}/edit(id=${person.getId()})}">Edit</a>
+
+<a th:text="${person.getName() + ', ' + person.getAge()}">VALUE</a>
+<p th:text="'Id человека: '+${person.getId()}">VALUE</p>
+<a th:href="@{/people/{id}/edit(id=${person.getId()})}">
+    <input type="button" value="Edit">
+</a>
+
+<hr style="
+    color: black;
+    background-color: black;
+    height: 2px;">
+<p>Фильмография: </p>
+
+<div th:each="movie : ${movies}">
+    <a th:text="${movie.getName()}">movies</a>
+</div>
 
 <form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">
     <input type="submit" value="Delete"/>
