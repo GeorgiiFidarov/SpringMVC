@@ -26,8 +26,4 @@ public class MovieService {
     public List<Movie> findByOwner(Person owner){
         return moviesRepository.findByOwner(owner);
     }
-
-
-
-
 }

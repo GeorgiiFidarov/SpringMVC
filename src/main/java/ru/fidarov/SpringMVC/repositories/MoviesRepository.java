@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface MoviesRepository extends JpaRepository<Movie,Integer> {
+
     List<Movie> findByName(String movieName);
 
     List<Movie> findByOwner(Person owner);

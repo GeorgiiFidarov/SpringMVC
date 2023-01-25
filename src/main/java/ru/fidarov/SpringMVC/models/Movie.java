@@ -19,7 +19,7 @@ public class Movie {
     private int yearOfProduction;
 
     @ManyToOne
-    @JoinColumn(name="person_id",referencedColumnName = "id")
+    @JoinColumn(name = "person_id",referencedColumnName = "id")
     private Person owner;
 
     public Movie() {
