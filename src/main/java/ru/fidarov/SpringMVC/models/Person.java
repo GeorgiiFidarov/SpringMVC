@@ -42,7 +42,6 @@ public class Person {
     @OneToMany(mappedBy = "owner")
     private List<Movie> movie;
 
-
     public Person(){
 
     }
